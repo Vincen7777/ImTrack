@@ -1,0 +1,187 @@
+/* ============================================================
+   ImTrack — components.css
+   Reusable UI: buttons, form inputs, avatar,
+   notif panel, toast
+   ============================================================ */
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--r-md);
+    border: none;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    line-height: 1;
+    font-family: inherit;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--brand-600);
+    color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--brand-700);
+}
+
+/* ── Form inputs ──────────────────────────────────────────── */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.form-input {
+    font-family: inherit;
+    font-size: 0.875rem;
+    padding: 0.625rem 1rem;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--r-md);
+    background: #fff;
+    color: var(--gray-800);
+    outline: none;
+    width: 100%;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+}
+
+.form-input::placeholder {
+    color: var(--gray-400);
+}
+
+.form-input:focus {
+    border-color: var(--brand-500);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+/* ── Avatar ───────────────────────────────────────────────── */
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-full);
+    background: var(--brand-500);
+    color: #fff;
+    font-weight: 700;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.avatar-md {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+}
+
+/* ── Notif Panel ──────────────────────────────────────────── */
+.notif-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 288px;
+    background: #fff;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--r-xl);
+    box-shadow: var(--sh-xl);
+    z-index: 40;
+    display: none;
+    overflow: hidden;
+}
+
+.notif-panel.open {
+    display: block;
+}
+
+.notif-head {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.625rem 1rem;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.notif-item:hover {
+    background: var(--gray-50);
+}
+
+.notif-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--brand-500);
+    margin-top: 5px;
+    flex-shrink: 0;
+}
+
+.notif-text {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    line-height: 1.5;
+}
+
+.notif-time {
+    font-size: 0.625rem;
+    color: var(--gray-400);
+    margin-top: 0.125rem;
+}
+
+.notif-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--gray-400);
+    font-size: 0.875rem;
+}
+
+/* ── Toast ────────────────────────────────────────────────── */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--gray-900);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 1.125rem;
+    border-radius: var(--r-full);
+    box-shadow: var(--sh-lg);
+    z-index: 60;
+    opacity: 0;
+    transition:
+        opacity 0.2s,
+        transform 0.2s;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
