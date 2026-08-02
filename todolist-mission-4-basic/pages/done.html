@@ -1,74 +1,119 @@
 <!doctype html>
 <html lang="id">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-        <title>Done — ImTrack</title>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-            rel="stylesheet"
-        />
-        <link
-            rel="stylesheet"
-            href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"
-        />
-        <link
-            rel="stylesheet"
-            href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css"
-        />
-        <link rel="stylesheet" href="../style/global.css" />
-        <link rel="stylesheet" href="../style/components.css" />
-        <link rel="stylesheet" href="../style/layout.css" />
-        <link rel="stylesheet" href="../style/pages.css" />
-        <link rel="stylesheet" href="../style/beranda.css" />
-        <link rel="stylesheet" href="../style/todo.css" />
-    </head>
-    <body>
-        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Done — ImTrack</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css"
+    />
+    <link rel="stylesheet" href="../style/global.css" />
+    <link rel="stylesheet" href="../style/components.css" />
+    <link rel="stylesheet" href="../style/layout.css" />
+    <link rel="stylesheet" href="../style/pages.css" />
+    <link rel="stylesheet" href="../style/beranda.css" />
+    <link rel="stylesheet" href="../style/todo.css" />
+  </head>
+  <body>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-        <div class="app-shell">
-            <aside
-                id="app-sidebar"
-                class="sidebar"
-                aria-label="Navigasi"
-            ></aside>
-            <main class="app-main">
-                <header id="app-topbar" class="topbar"></header>
-                <div class="app-content">
-                    <header class="page-hd">
-                        <h1 id="page-title">Done</h1>
-                        <p class="page-date" id="today-date"></p>
-                    </header>
+    <div class="app-shell">
+      <aside id="app-sidebar" class="sidebar" aria-label="Navigasi"></aside>
+      <main class="app-main">
+        <header id="app-topbar" class="topbar"></header>
+        <div class="app-content">
+          <header class="page-hd">
+            <h1 id="page-title">Done</h1>
+            <p class="page-date" id="today-date"></p>
+          </header>
 
-                    <div id="todo-root" style="display: none">
-                        <div id="priority-root"></div>
-                        <div class="delete-all-wrap">
-                            <button
-                                id="delete-all-btn"
-                                class="btn-delete-all"
-                                style="display: none"
-                            >
-                                <i class="ph ph-trash"></i> Hapus Semua Tugas
-                            </button>
-                        </div>
-                        <button
-                            class="fab"
-                            id="fab-btn"
-                            aria-label="Tambah tugas"
-                        >
-                            <i class="ph ph-plus"></i>
-                        </button>
-                    </div>
+          <div id="todo-root" style="display: none">
+            <div id="priority-root"></div>
+            <div class="delete-all-wrap">
+              <button
+                id="delete-all-btn"
+                class="btn-delete-all"
+                style="display: none"
+              >
+                <i class="ph ph-trash"></i> Hapus Semua Tugas
+              </button>
+            </div>
+            <button class="fab" id="fab-btn" aria-label="Tambah tugas">
+              <i class="ph ph-plus"></i>
+            </button>
+          </div>
 
-                    <div id="done-root"><div id="done-content"></div></div>
-                </div>
-            </main>
+          <div id="done-root"><div id="done-content"></div></div>
         </div>
+      </main>
+    </div>
 
-        <script src="../script/app.js" defer></script>
-        <script src="../script/task-store.js" defer></script>
-        <script src="../script/components/sidebar.js" defer></script>
-        <script src="../script/components/topbar.js" defer></script>
-        <script src="../script/beranda.js" defer></script>
-    </body>
+    <!-- ── Templates untuk markup dinamis (diisi via JS di beranda.js) ── -->
+    <template id="tpl-prio-section">
+      <div class="prio-section">
+        <div class="prio-head">
+          <span class="prio-head-label">
+            <i data-slot="icon"></i>
+            <span data-slot="label"></span>
+          </span>
+          <span class="prio-badge" data-slot="badge"></span>
+          <span class="prio-count" data-slot="count"></span>
+        </div>
+        <div class="prio-body">
+          <table class="todo-table">
+            <thead>
+              <tr>
+                <th class="th-check">&#10003;</th>
+                <th class="th-text">Tugas</th>
+                <th class="th-date">Tanggal</th>
+                <th class="th-action">Hapus</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-task-row">
+      <tr class="todo-row">
+        <td class="td-check">
+          <input type="checkbox" class="task-cb" data-action="toggle" />
+        </td>
+        <td class="td-text">
+          <span class="task-text-cell" data-slot="text"></span>
+          <span class="overdue-tag" data-slot="overdue">
+            <i class="ph ph-warning"></i> Terlambat
+          </span>
+        </td>
+        <td class="td-date" data-slot="date"></td>
+        <td class="td-action">
+          <button class="icon-btn del-btn" data-action="delete">
+            <i class="ph ph-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </template>
+
+    <template id="tpl-empty-row">
+      <tr>
+        <td colspan="4" class="table-empty">
+          <span data-slot="text"></span>
+        </td>
+      </tr>
+    </template>
+
+    <script type="module" src="../script/components/sidebar.js"></script>
+    <script type="module" src="../script/components/topbar.js"></script>
+    <script type="module" src="../script/beranda.js"></script>
+  </body>
 </html>

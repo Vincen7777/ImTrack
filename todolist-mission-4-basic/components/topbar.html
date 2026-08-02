@@ -32,3 +32,14 @@
     <div id="notif-list"></div>
   </div>
 </div>
+
+<!-- ── Template untuk item notifikasi (diisi via JS di beranda.js) ── -->
+<template id="tpl-notif-item">
+  <div class="notif-item" data-action="markRead">
+    <div data-slot="indicator"></div>
+    <div>
+      <p class="notif-text" data-slot="text"></p>
+      <p class="notif-time" data-slot="time"></p>
+    </div>
+  </div>
+</template>

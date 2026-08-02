@@ -1,61 +1,54 @@
-/**
- * task-modal.js — Modal logic
- */
-(function () {
-  "use strict";
-  var Im = window.ImTrack;
-  var M = (Im.modal = {});
-  var state = { priority: "Medium" };
+import { clearErr, showErr } from "./app.js";
+import { add } from "./task-store.js";
 
-  M.open = function () {
-    document.getElementById("m-title").value = "";
-    document.getElementById("m-due").value = "";
-    document.getElementById("m-err").classList.remove("on");
-    document.getElementById("m-submit").disabled = false;
-    document.getElementById("m-submit").textContent = "Tambah Tugas";
-    state = { priority: "Medium" };
+let state = { priority: "Medium" };
 
-    document.querySelectorAll("#prio-group .prio-btn").forEach(function (b) {
-      var p = b.getAttribute("data-prio");
-      b.className =
-        "prio-btn prio-" + p.toLowerCase() + (p === "Medium" ? " on" : " off");
-    });
+export function open() {
+  document.getElementById("m-title").value = "";
+  document.getElementById("m-due").value = "";
+  document.getElementById("m-err").classList.remove("on");
+  document.getElementById("m-submit").disabled = false;
+  document.getElementById("m-submit").textContent = "Tambah Tugas";
+  state = { priority: "Medium" };
 
-    document.getElementById("modal-bg").classList.add("open");
-    setTimeout(function () {
-      document.getElementById("m-title").focus();
-    }, 120);
-  };
+  document.querySelectorAll("#prio-group .prio-btn").forEach((b) => {
+    const p = b.getAttribute("data-prio");
+    b.className = `prio-btn prio-${p.toLowerCase()}${p === "Medium" ? " on" : " off"}`;
+  });
 
-  M.close = function () {
-    var bg = document.getElementById("modal-bg");
-    if (bg) bg.classList.remove("open");
-  };
+  document.getElementById("modal-bg").classList.add("open");
+  setTimeout(() => {
+    document.getElementById("m-title").focus();
+  }, 120);
+}
 
-  M.setPrio = function (p) {
-    state.priority = p;
-    document.querySelectorAll("#prio-group .prio-btn").forEach(function (b) {
-      var bp = b.getAttribute("data-prio");
-      b.className =
-        "prio-btn prio-" + bp.toLowerCase() + (bp === p ? " on" : " off");
-    });
-  };
+export function close() {
+  const bg = document.getElementById("modal-bg");
+  if (bg) bg.classList.remove("open");
+}
 
-  M.submit = function (e) {
-    e.preventDefault();
-    Im.clearErr("m-err");
-    var text = document.getElementById("m-title").value.trim();
-    if (!text) {
-      Im.showErr("m-err", "Tugas tidak boleh kosong.");
-      return;
-    }
+export function setPrio(p) {
+  state.priority = p;
+  document.querySelectorAll("#prio-group .prio-btn").forEach((b) => {
+    const bp = b.getAttribute("data-prio");
+    b.className = `prio-btn prio-${bp.toLowerCase()}${bp === p ? " on" : " off"}`;
+  });
+}
 
-    document.getElementById("m-submit").disabled = true;
-    document.getElementById("m-submit").textContent = "Menambah...";
+export function submit(e) {
+  e.preventDefault();
+  clearErr("m-err");
+  const text = document.getElementById("m-title").value.trim();
+  if (!text) {
+    showErr("m-err", "Tugas tidak boleh kosong.");
+    return;
+  }
 
-    var due = document.getElementById("m-due").value || null;
-    var task = Im.store.add(text, state.priority, due);
-    M.close();
-    document.dispatchEvent(new CustomEvent("task:added", { detail: task }));
-  };
-})();
+  document.getElementById("m-submit").disabled = true;
+  document.getElementById("m-submit").textContent = "Menambah...";
+
+  const due = document.getElementById("m-due").value || null;
+  const task = add(text, state.priority, due);
+  close();
+  document.dispatchEvent(new CustomEvent("task:added", { detail: task }));
+}

@@ -1,341 +1,332 @@
-/**
- * beranda.js — Controller: init, render, page detection via location.pathname
- * Uses: ImTrack.store (data) + ImTrack.modal (modal on todo page)
- */
-(function () {
-  "use strict";
-  var Im = window.ImTrack;
-  var S = Im.store;
-  var M = Im.modal;
+import * as store from "./task-store.js";
+import * as modal from "./task-modal.js";
+import { fmtDate, fmtFullDate, toast } from "./app.js";
 
-  var isDonePage = window.location.pathname.indexOf("done") !== -1;
+const isDonePage = window.location.pathname.includes("done");
 
-  var notifications = [
-    {
-      id: "n1",
-      text: "Selamat datang di ImTrack! Mulai tambahkan tugasmu hari ini.",
-      time: "Baru saja",
-      read: false,
-    },
-  ];
+const notifications = [
+  {
+    id: "n1",
+    text: "Selamat datang di ImTrack! Mulai tambahkan tugasmu hari ini.",
+    time: "Baru saja",
+    read: false,
+  },
+];
 
-  var el = function (id) {
-    return document.getElementById(id);
-  };
-  var todayStr = function () {
-    return new Date().toISOString().split("T")[0];
-  };
-  var isOverdue = function (t) {
-    return t.due && t.status !== "done" && t.due < todayStr();
-  };
+const el = (id) => document.getElementById(id);
+const todayStr = () => new Date().toISOString().split("T")[0];
+const isOverdue = (t) => t.due && t.status !== "done" && t.due < todayStr();
 
-  var CFG = {
-    High: {
-      l: "Prioritas Tinggi",
-      icon: "ph-fill ph-fire",
-      ico: "#ef4444",
-      bg: "#fef2f2",
-      fg: "#b91c1c",
-      badge:
-        '<span class="prio-badge" style="background:#fef2f2;color:#ef4444">Fokus Utama</span>',
-    },
-    Medium: {
-      l: "Prioritas Sedang",
-      icon: "ph-fill ph-clock",
-      ico: "#d97706",
-      bg: "#fffbeb",
-      fg: "#92400e",
-      badge: "",
-    },
-    Low: {
-      l: "Prioritas Rendah",
-      icon: "ph-fill ph-feather",
-      ico: "#3b82f6",
-      bg: "#eff6ff",
-      fg: "#1d4ed8",
-      badge: "",
-    },
-  };
+const CFG = {
+  High: {
+    l: "Prioritas Tinggi",
+    icon: "ph-fill ph-fire",
+    ico: "#ef4444",
+    bg: "#fef2f2",
+    fg: "#b91c1c",
+    badgeText: "Fokus Utama",
+  },
+  Medium: {
+    l: "Prioritas Sedang",
+    icon: "ph-fill ph-clock",
+    ico: "#d97706",
+    bg: "#fffbeb",
+    fg: "#92400e",
+    badgeText: null,
+  },
+  Low: {
+    l: "Prioritas Rendah",
+    icon: "ph-fill ph-feather",
+    ico: "#3b82f6",
+    bg: "#eff6ff",
+    fg: "#1d4ed8",
+    badgeText: null,
+  },
+};
 
-  function dateCell(t) {
-    return Im.fmtDate(t.due || t.dateAdded);
+const dateCell = (t) => fmtDate(t.due || t.dateAdded);
+
+/* ── Template helpers ──────────────────────────────────── */
+const tpl = (id) => document.getElementById(id).content.cloneNode(true);
+
+function buildRow(t, { checked, showOverdue, doneClass }) {
+  const frag = tpl("tpl-task-row");
+  const tr = frag.querySelector("tr");
+  tr.dataset.id = t.id;
+  if (showOverdue) tr.classList.add("overdue-row");
+
+  const cb = frag.querySelector(".task-cb");
+  cb.checked = checked;
+  if (checked) cb.classList.add("done-cb");
+
+  const textEl = frag.querySelector('[data-slot="text"]');
+  textEl.textContent = t.text;
+  if (doneClass) textEl.classList.add("done");
+
+  if (!showOverdue) frag.querySelector('[data-slot="overdue"]').remove();
+
+  frag.querySelector('[data-slot="date"]').textContent = dateCell(t);
+  return tr;
+}
+
+function emptyRow(text) {
+  const frag = tpl("tpl-empty-row");
+  frag.querySelector('[data-slot="text"]').textContent = text;
+  return frag.querySelector("tr");
+}
+
+function buildRows(items, rowFn, emptyText) {
+  const frag = document.createDocumentFragment();
+  if (items.length) {
+    items.forEach((t) => frag.appendChild(rowFn(t)));
+  } else {
+    frag.appendChild(emptyRow(emptyText));
+  }
+  return frag;
+}
+
+function buildSection({ label, icon, iconColor, bg, fg, badgeText, count, rows }) {
+  const frag = tpl("tpl-prio-section");
+
+  const head = frag.querySelector(".prio-head");
+  head.style.background = bg;
+  head.style.color = fg;
+
+  const iconEl = frag.querySelector('[data-slot="icon"]');
+  iconEl.className = icon;
+  iconEl.style.color = iconColor;
+
+  frag.querySelector('[data-slot="label"]').textContent = label;
+
+  const badgeEl = frag.querySelector('[data-slot="badge"]');
+  if (badgeText) {
+    badgeEl.textContent = badgeText;
+    badgeEl.style.background = "#fef2f2";
+    badgeEl.style.color = "#ef4444";
+  } else {
+    badgeEl.remove();
   }
 
-  /* ── Render ────────────────────────────────────────────── */
-  function render(filter) {
-    filter = (filter || "").toLowerCase().trim();
-    renderTodos(filter);
-    renderDones(filter);
-    var delAll = el("delete-all-btn");
-    if (delAll) delAll.style.display = S.all().length ? "inline-flex" : "none";
-  }
+  frag.querySelector('[data-slot="count"]').textContent = count;
+  frag.querySelector("tbody").appendChild(rows);
 
-  function renderTodos(filter) {
-    var root = el("priority-root");
-    if (!root) return;
-    var todos = S.filterByStatus("todo", filter).sort(function (a, b) {
-      return isOverdue(b) - isOverdue(a);
-    });
-    var html = "";
+  return frag;
+}
 
-    ["High", "Medium", "Low"].forEach(function (prio) {
-      var pts = todos.filter(function (t) {
-        return t.priority === prio;
-      });
-      var cfg = CFG[prio];
-      var rows = pts.length
-        ? pts.map(todoRow).join("")
-        : '<tr><td colspan="4" class="table-empty"><span>Tidak ada tugas</span></td></tr>';
+/* ── Render ────────────────────────────────────────────── */
+function render(filter = "") {
+  filter = filter.toLowerCase().trim();
+  renderTodos(filter);
+  renderDones(filter);
+  const delAll = el("delete-all-btn");
+  if (delAll) delAll.style.display = store.all().length ? "inline-flex" : "none";
+}
 
-      html +=
-        '<div class="prio-section">' +
-        '<div class="prio-head" style="background:' +
-        cfg.bg +
-        ";color:" +
-        cfg.fg +
-        '">' +
-        '<span class="prio-head-label"><i class="' +
-        cfg.icon +
-        '" style="color:' +
-        cfg.ico +
-        '"></i> ' +
-        cfg.l +
-        "</span>" +
-        cfg.badge +
-        '<span class="prio-count">' +
-        pts.length +
-        "</span>" +
-        "</div>" +
-        '<div class="prio-body">' +
-        '<table class="todo-table"><thead><tr><th class="th-check">&#10003;</th><th class="th-text">Tugas</th><th class="th-date">Tanggal</th><th class="th-action">Hapus</th></tr></thead>' +
-        "<tbody>" +
-        rows +
-        "</tbody></table>" +
-        "</div>" +
-        "</div>";
-    });
+function renderTodos(filter) {
+  const root = el("priority-root");
+  if (!root) return;
+  const todos = store
+    .filterByStatus("todo", filter)
+    .sort((a, b) => isOverdue(b) - isOverdue(a));
 
-    root.innerHTML =
-      html ||
-      '<div class="empty"><i class="ph ph-clipboard-text"></i><p>Belum ada tugas</p></div>';
-  }
+  root.innerHTML = "";
+  const frag = document.createDocumentFragment();
 
-  function todoRow(t) {
-    var ov = isOverdue(t)
-      ? '<span class="overdue-tag"><i class="ph ph-warning"></i> Terlambat</span>'
-      : "";
-    return (
-      '<tr class="todo-row' +
-      (isOverdue(t) ? " overdue-row" : "") +
-      '" data-id="' +
-      t.id +
-      '">' +
-      '<td class="td-check"><input type="checkbox" class="task-cb" data-action="toggle"></td>' +
-      '<td class="td-text"><span class="task-text-cell">' +
-      Im.esc(t.text) +
-      "</span>" +
-      ov +
-      "</td>" +
-      '<td class="td-date">' +
-      dateCell(t) +
-      "</td>" +
-      '<td class="td-action"><button class="icon-btn del-btn" data-action="delete"><i class="ph ph-trash"></i></button></td>' +
-      "</tr>"
+  ["High", "Medium", "Low"].forEach((prio) => {
+    const pts = todos.filter((t) => t.priority === prio);
+    const cfg = CFG[prio];
+    frag.appendChild(
+      buildSection({
+        label: cfg.l,
+        icon: cfg.icon,
+        iconColor: cfg.ico,
+        bg: cfg.bg,
+        fg: cfg.fg,
+        badgeText: cfg.badgeText,
+        count: pts.length,
+        rows: buildRows(pts, todoRow, "Tidak ada tugas"),
+      })
     );
-  }
-
-  function renderDones(filter) {
-    var root = el("done-content");
-    if (!root) return;
-    var dones = S.filterByStatus("done", filter);
-    var rows = dones.length
-      ? dones.map(doneRow).join("")
-      : '<tr><td colspan="4" class="table-empty"><span>Belum ada tugas yang diselesaikan</span></td></tr>';
-
-    root.innerHTML =
-      '<div class="prio-section">' +
-      '<div class="prio-head" style="background:#ecfdf5;color:#065f46">' +
-      '<span class="prio-head-label"><i class="ph-fill ph-check-circle" style="color:#10b981"></i> Done (Selesai)</span>' +
-      '<span class="prio-count">' +
-      dones.length +
-      "</span>" +
-      "</div>" +
-      '<div class="prio-body">' +
-      '<table class="todo-table"><thead><tr><th class="th-check">&#10003;</th><th class="th-text">Tugas</th><th class="th-date">Tanggal</th><th class="th-action">Hapus</th></tr></thead>' +
-      "<tbody>" +
-      rows +
-      "</tbody></table>" +
-      "</div>" +
-      "</div>";
-  }
-
-  function doneRow(t) {
-    return (
-      '<tr class="todo-row" data-id="' +
-      t.id +
-      '">' +
-      '<td class="td-check"><input type="checkbox" class="task-cb done-cb" checked data-action="toggle"></td>' +
-      '<td class="td-text"><span class="task-text-cell done">' +
-      Im.esc(t.text) +
-      "</span></td>" +
-      '<td class="td-date">' +
-      dateCell(t) +
-      "</td>" +
-      '<td class="td-action"><button class="icon-btn del-btn" data-action="delete"><i class="ph ph-trash"></i></button></td>' +
-      "</tr>"
-    );
-  }
-
-  /* ── Actions ───────────────────────────────────────────── */
-  function toggleTask(id) {
-    var t = S.toggle(id);
-    if (t) {
-      render();
-      Im.toast(t.status === "done" ? "Selesai!" : "Dikembalikan");
-    }
-  }
-  function deleteTask(id) {
-    if (S.remove(id)) {
-      render();
-      Im.toast("Tugas dihapus");
-    }
-  }
-
-  function deleteAll() {
-    if (!S.all().length) return;
-    if (!confirm("Hapus semua tugas?")) return;
-    S.removeAll();
-    render();
-    Im.toast("Semua tugas dihapus");
-  }
-
-  /* ── Notifications ─────────────────────────────────────── */
-  function renderNotifs() {
-    var unread = notifications.filter(function (n) {
-      return !n.read;
-    }).length;
-    var dot = el("notif-dot");
-    if (dot) dot.style.display = unread > 0 ? "block" : "none";
-
-    var list = el("notif-list");
-    if (!list) return;
-
-    list.innerHTML = notifications.length
-      ? notifications
-          .map(function (n) {
-            return (
-              '<div class="notif-item" data-id="' +
-              n.id +
-              '" data-action="markRead">' +
-              (n.read
-                ? '<div class="notif-spacer"></div>'
-                : '<div class="notif-dot"></div>') +
-              '<div><p class="notif-text">' +
-              Im.esc(n.text) +
-              '</p><p class="notif-time">' +
-              n.time +
-              "</p></div></div>"
-            );
-          })
-          .join("")
-      : '<p class="notif-empty">Tidak ada notifikasi</p>';
-
-    list.onclick = function (e) {
-      var item = e.target.closest('[data-action="markRead"]');
-      if (item) {
-        var n = notifications.find(function (x) {
-          return x.id === item.dataset.id;
-        });
-        if (n) {
-          n.read = true;
-          renderNotifs();
-        }
-      }
-    };
-  }
-
-  function toggleNotif() {
-    var p = el("notif-panel"),
-      b = el("bell-btn");
-    if (p) {
-      var o = p.classList.toggle("open");
-      if (b) b.setAttribute("aria-expanded", String(o));
-    }
-  }
-  function closeNotifPanel() {
-    var p = el("notif-panel"),
-      b = el("bell-btn");
-    if (p) {
-      p.classList.remove("open");
-      if (b) b.setAttribute("aria-expanded", "false");
-    }
-  }
-
-  /* ── Init ──────────────────────────────────────────────── */
-  document.addEventListener("DOMContentLoaded", function () {
-    S.init();
-    el("today-date").textContent = Im.fmtFullDate();
-
-    if (!isDonePage) {
-      el("fab-btn").addEventListener("click", function () {
-        M.open();
-      });
-      el("modal-close-btn").addEventListener("click", function () {
-        M.close();
-      });
-      var mbg = el("modal-bg");
-      if (mbg)
-        mbg.addEventListener("click", function (e) {
-          if (e.target === mbg) M.close();
-        });
-      el("modal-form").addEventListener("submit", function (e) {
-        M.submit(e);
-      });
-      el("prio-group").addEventListener("click", function (e) {
-        var b = e.target.closest("[data-prio]");
-        if (b) M.setPrio(b.getAttribute("data-prio"));
-      });
-    }
-
-    document.addEventListener("task:added", function () {
-      render();
-      renderNotifs();
-    });
-
-    if (el("priority-root"))
-      el("priority-root").addEventListener("click", handleAction);
-    if (el("done-content"))
-      el("done-content").addEventListener("click", handleAction);
-
-    function handleAction(e) {
-      var row = e.target.closest("[data-id]");
-      if (!row) return;
-      var id = row.dataset.id;
-      if (e.target.closest("[data-action='toggle']")) toggleTask(id);
-      else if (e.target.closest("[data-action='delete']")) deleteTask(id);
-    }
-
-    if (el("delete-all-btn"))
-      el("delete-all-btn").addEventListener("click", deleteAll);
-
-    document.addEventListener("input", function (e) {
-      if (e.target.id === "search-input") render(e.target.value);
-    });
-    document.addEventListener("click", function (e) {
-      if (e.target.closest("#bell-btn")) {
-        toggleNotif();
-        return;
-      }
-      if (!e.target.closest(".tb-bell-wrap")) closeNotifPanel();
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
-        closeNotifPanel();
-        if (M) M.close();
-      }
-    });
-    document.addEventListener("topbar:loaded", renderNotifs);
-
-    render();
   });
-})();
+
+  root.appendChild(frag);
+}
+
+function todoRow(t) {
+  return buildRow(t, { checked: false, showOverdue: isOverdue(t), doneClass: false });
+}
+
+function renderDones(filter) {
+  const root = el("done-content");
+  if (!root) return;
+  const dones = store.filterByStatus("done", filter);
+
+  root.innerHTML = "";
+  root.appendChild(
+    buildSection({
+      label: "Done (Selesai)",
+      icon: "ph-fill ph-check-circle",
+      iconColor: "#10b981",
+      bg: "#ecfdf5",
+      fg: "#065f46",
+      badgeText: null,
+      count: dones.length,
+      rows: buildRows(dones, doneRow, "Belum ada tugas yang diselesaikan"),
+    })
+  );
+}
+
+function doneRow(t) {
+  return buildRow(t, { checked: true, showOverdue: false, doneClass: true });
+}
+
+/* ── Actions ───────────────────────────────────────────── */
+function toggleTask(id) {
+  const t = store.toggle(id);
+  if (t) {
+    render();
+    toast(t.status === "done" ? "Selesai!" : "Dikembalikan");
+  }
+}
+
+function deleteTask(id) {
+  if (store.remove(id)) {
+    render();
+    toast("Tugas dihapus");
+  }
+}
+
+function deleteAll() {
+  if (!store.all().length) return;
+  if (!confirm("Hapus semua tugas?")) return;
+  store.removeAll();
+  render();
+  toast("Semua tugas dihapus");
+}
+
+/* ── Notifications ─────────────────────────────────────── */
+function renderNotifs() {
+  const unread = notifications.filter((n) => !n.read).length;
+  const dot = el("notif-dot");
+  if (dot) dot.style.display = unread > 0 ? "block" : "none";
+
+  const list = el("notif-list");
+  if (!list) return;
+
+  list.innerHTML = "";
+  if (notifications.length) {
+    const frag = document.createDocumentFragment();
+    notifications.forEach((n) => frag.appendChild(buildNotifItem(n)));
+    list.appendChild(frag);
+  } else {
+    const empty = document.createElement("p");
+    empty.className = "notif-empty";
+    empty.textContent = "Tidak ada notifikasi";
+    list.appendChild(empty);
+  }
+
+  list.onclick = (e) => {
+    const item = e.target.closest('[data-action="markRead"]');
+    if (item) {
+      const n = notifications.find((x) => x.id === item.dataset.id);
+      if (n) {
+        n.read = true;
+        renderNotifs();
+      }
+    }
+  };
+}
+
+function buildNotifItem(n) {
+  const frag = tpl("tpl-notif-item");
+  const wrap = frag.querySelector(".notif-item");
+  wrap.dataset.id = n.id;
+
+  const indicator = frag.querySelector('[data-slot="indicator"]');
+  indicator.className = n.read ? "notif-spacer" : "notif-dot";
+
+  frag.querySelector('[data-slot="text"]').textContent = n.text;
+  frag.querySelector('[data-slot="time"]').textContent = n.time;
+
+  return wrap;
+}
+
+function toggleNotif() {
+  const p = el("notif-panel");
+  const b = el("bell-btn");
+  if (p) {
+    const o = p.classList.toggle("open");
+    if (b) b.setAttribute("aria-expanded", String(o));
+  }
+}
+
+function closeNotifPanel() {
+  const p = el("notif-panel");
+  const b = el("bell-btn");
+  if (p) {
+    p.classList.remove("open");
+    if (b) b.setAttribute("aria-expanded", "false");
+  }
+}
+
+/* ── Init ──────────────────────────────────────────────── */
+document.addEventListener("DOMContentLoaded", () => {
+  store.init();
+  el("today-date").textContent = fmtFullDate();
+
+  if (!isDonePage) {
+    el("fab-btn").addEventListener("click", () => modal.open());
+    el("modal-close-btn").addEventListener("click", () => modal.close());
+    const mbg = el("modal-bg");
+    if (mbg)
+      mbg.addEventListener("click", (e) => {
+        if (e.target === mbg) modal.close();
+      });
+    el("modal-form").addEventListener("submit", (e) => modal.submit(e));
+    el("prio-group").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-prio]");
+      if (b) modal.setPrio(b.getAttribute("data-prio"));
+    });
+  }
+
+  document.addEventListener("task:added", () => {
+    render();
+    renderNotifs();
+  });
+
+  if (el("priority-root")) el("priority-root").addEventListener("click", handleAction);
+  if (el("done-content")) el("done-content").addEventListener("click", handleAction);
+
+  function handleAction(e) {
+    const row = e.target.closest("[data-id]");
+    if (!row) return;
+    const id = row.dataset.id;
+    if (e.target.closest("[data-action='toggle']")) toggleTask(id);
+    else if (e.target.closest("[data-action='delete']")) deleteTask(id);
+  }
+
+  if (el("delete-all-btn")) el("delete-all-btn").addEventListener("click", deleteAll);
+
+  document.addEventListener("input", (e) => {
+    if (e.target.id === "search-input") render(e.target.value);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#bell-btn")) {
+      toggleNotif();
+      return;
+    }
+    if (!e.target.closest(".tb-bell-wrap")) closeNotifPanel();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeNotifPanel();
+      modal.close();
+    }
+  });
+
+  document.addEventListener("topbar:loaded", renderNotifs);
+
+  render();
+});
