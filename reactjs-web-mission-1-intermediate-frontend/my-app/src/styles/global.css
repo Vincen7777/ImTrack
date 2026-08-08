@@ -1,0 +1,193 @@
+/* ============================================================
+   ImTrack Mockup — global.css
+   Design tokens + reset + base + typography
+   ============================================================ */
+
+/* ── Design Tokens ─────────────────────────────────────────── */
+:root {
+    --brand-50: #f0fdfa;
+    --brand-100: #ccfbf1;
+    --brand-200: #99f6e4;
+    --brand-500: #14b8a6;
+    --brand-600: #0d9488;
+    --brand-700: #0f766e;
+
+    --red-50: #fef2f2;
+    --red-100: #fecaca;
+    --red-500: #ef4444;
+    --red-700: #b91c1c;
+    --blue-50: #eff6ff;
+    --blue-100: #bfdbfe;
+    --blue-500: #3b82f6;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+
+    --bg-page: #f9fafb;
+    --bg-card: #ffffff;
+
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 16px;
+    --r-xl: 20px;
+    --r-2xl: 24px;
+    --r-full: 9999px;
+
+    --sh-sm: 0 1px 3px 0 rgb(0 0 0/0.05), 0 1px 2px -1px rgb(0 0 0/0.05);
+    --sh-md: 0 4px 6px -1px rgb(0 0 0/0.07), 0 2px 4px -2px rgb(0 0 0/0.07);
+    --sh-lg: 0 10px 15px -3px rgb(0 0 0/0.08), 0 4px 6px -4px rgb(0 0 0/0.05);
+    --sh-xl: 0 20px 25px -5px rgb(0 0 0/0.1), 0 8px 10px -6px rgb(0 0 0/0.1);
+
+    --sidebar-w: 256px;
+    --topbar-h: 52px;
+}
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family:
+        "Inter",
+        -apple-system,
+        sans-serif;
+    background: var(--bg-page);
+    color: var(--gray-800);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+}
+
+img,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+button {
+    cursor: pointer;
+    font-family: inherit;
+}
+
+a {
+    color: var(--brand-600);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
+}
+
+/* ── Typography scale ──────────────────────────────────────── */
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--gray-900);
+}
+
+h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+p {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    line-height: 1.6;
+}
+
+/* ── Empty state ───────────────────────────────────────────── */
+.empty {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    color: var(--gray-400);
+}
+
+.empty i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.empty p:first-of-type {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--gray-500);
+}
+
+.empty p + p {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* ── Page header ───────────────────────────────────────────── */
+.page-hd {
+    margin-bottom: 1.75rem;
+}
+
+.page-hd h1 {
+    font-size: 1.625rem;
+    font-weight: 700;
+}
+
+.page-date {
+    font-size: 0.875rem;
+    color: var(--gray-400);
+    margin-top: 0.25rem;
+}
+
+/* ── Error message ─────────────────────────────────────────── */
+.err {
+    font-size: 0.75rem;
+    color: var(--red-500);
+    background: var(--red-50);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--r-sm);
+    display: none;
+}
+
+.err.on {
+    display: block;
+}
