@@ -2,6 +2,7 @@ import { useState, useContext, useCallback } from 'react';
 import { ToastContext } from '../components/common/ToastProvider';
 import Sidebar from '../components/layout/Sidebar';
 import Topbar from '../components/layout/Topbar';
+import BottomNav from '../components/layout/BottomNav';
 import TodayPriorityList from '../components/beranda/TodayPriorityList';
 import QuickAddModal from '../components/beranda/QuickAddModal';
 import { useTaskStore } from '../hooks/useTaskStore';
@@ -108,6 +109,9 @@ function Beranda() {
           </section>
         </div>
       </main>
+
+      {/* Bottom Nav (mobile only) */}
+      <BottomNav onNotImpl={handleNotImpl} />
 
       {/* FAB */}
       <button

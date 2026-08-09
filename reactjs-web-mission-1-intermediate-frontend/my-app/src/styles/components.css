@@ -418,6 +418,12 @@
     box-shadow: 0 12px 24px -4px rgba(13, 148, 136, 0.6);
 }
 
+@media (max-width: 767px) {
+    .fab {
+        bottom: calc(64px + 1rem);
+    }
+}
+
 /* ── Modal ────────────────────────────────────────────────── */
 .modal-backdrop {
     position: fixed;
