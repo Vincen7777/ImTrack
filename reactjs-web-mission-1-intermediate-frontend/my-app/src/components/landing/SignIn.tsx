@@ -92,61 +92,63 @@ function SignIn() {
       <div className="divider">atau</div>
 
       <form onSubmit={handleSignIn} noValidate>
-        <div className="form-group">
-          <label className="form-label" htmlFor="email">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            className="form-input"
-            placeholder="kamu@example.com"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <div className="label-row">
-            <label htmlFor="password">Password</label>
-            <button type="button" className="forgot-btn" onClick={handleForgot}>
-              Lupa password?
-            </button>
+        <div className="auth-form">
+          <div className="form-group">
+            <label className="form-label" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              className="form-input"
+              placeholder="kamu@example.com"
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
-          <PasswordInput
-            id="password"
-            name="password"
-            value={password}
-            onChange={setPassword}
-            visible={pwdVisible}
-            onToggleVisible={togglePwdVisible}
-            placeholder="••••••••"
-            autoComplete="current-password"
-            required
-          />
+
+          <div className="form-group">
+            <div className="label-row">
+              <label htmlFor="password">Password</label>
+              <button type="button" className="forgot-btn" onClick={handleForgot}>
+                Lupa password?
+              </button>
+            </div>
+            <PasswordInput
+              id="password"
+              name="password"
+              value={password}
+              onChange={setPassword}
+              visible={pwdVisible}
+              onToggleVisible={togglePwdVisible}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              required
+            />
+          </div>
+
+          <div className="remember-row">
+            <input
+              type="checkbox"
+              id="remember"
+              name="remember"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+            />
+            <label htmlFor="remember">Ingat saya</label>
+          </div>
+
+          <p id="err" className="err" role="alert">
+            {error}
+          </p>
+
+          <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
+            {submitting ? "Memproses..." : "Masuk"}
+          </button>
         </div>
-
-        <div className="remember-row">
-          <input
-            type="checkbox"
-            id="remember"
-            name="remember"
-            checked={remember}
-            onChange={(e) => setRemember(e.target.checked)}
-          />
-          <label htmlFor="remember">Ingat saya</label>
-        </div>
-
-        <p id="err" className="err" role="alert">
-          {error}
-        </p>
-
-        <button type="submit" className="btn btn-primary btn-block" disabled={submitting}>
-          {submitting ? "Memproses..." : "Masuk"}
-        </button>
       </form>
     </AuthLayout>  
     </>

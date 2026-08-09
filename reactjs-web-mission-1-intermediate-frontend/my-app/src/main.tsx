@@ -8,6 +8,7 @@ import "./styles/pages.css";
 import "./styles/toast.css";
 import "./styles/auth.css";
 import "./styles/components.css";
+import "./styles/beranda.css";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
