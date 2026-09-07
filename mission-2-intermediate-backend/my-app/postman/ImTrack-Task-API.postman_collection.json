@@ -1,0 +1,103 @@
+{
+  "info": {
+    "_postman_id": "788006f4-7467-4f7c-aec6-66014248695b",
+    "name": "ImTrack Task API",
+    "description": "Pengujian CRUD task untuk Mission Intermediate Backend 2. Jalankan request secara berurutan dengan Collection Runner.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "userId", "value": "1" },
+    { "key": "taskId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "1 - Create task",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "x-user-id", "value": "{{userId}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Belajar Express.js\",\n  \"priority\": \"Sekarang\",\n  \"status\": \"todo\",\n  \"due\": \"2026-09-08\",\n  \"tags\": [\"backend\", \"nodejs\"],\n  \"cat\": \"Belajar\",\n  \"isRecurring\": false\n}"
+        },
+        "url": "{{baseUrl}}/task"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 201', () => pm.response.to.have.status(201));",
+              "const body = pm.response.json();",
+              "pm.expect(body).to.have.property('id');",
+              "pm.collectionVariables.set('taskId', body.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 - Get all tasks",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "x-user-id", "value": "{{userId}}" }],
+        "url": "{{baseUrl}}/task"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": ["pm.test('status 200', () => pm.response.to.have.status(200));", "pm.expect(pm.response.json()).to.be.an('array');"] }
+        }
+      ]
+    },
+    {
+      "name": "3 - Get task by id",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "x-user-id", "value": "{{userId}}" }],
+        "url": "{{baseUrl}}/task/{{taskId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": ["pm.test('status 200', () => pm.response.to.have.status(200));", "pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('taskId'));"] }
+        }
+      ]
+    },
+    {
+      "name": "4 - Update task",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "x-user-id", "value": "{{userId}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"done\",\n  \"priority\": \"Nanti\"\n}" },
+        "url": "{{baseUrl}}/task/{{taskId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": ["pm.test('status 200', () => pm.response.to.have.status(200));", "pm.expect(pm.response.json().status).to.eql('done');"] }
+        }
+      ]
+    },
+    {
+      "name": "5 - Delete task",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "x-user-id", "value": "{{userId}}" }],
+        "url": "{{baseUrl}}/task/{{taskId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": ["pm.test('status 204', () => pm.response.to.have.status(204));"] }
+        }
+      ]
+    }
+  ]
+}

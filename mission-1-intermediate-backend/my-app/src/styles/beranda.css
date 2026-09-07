@@ -1,0 +1,94 @@
+/* ===== Beranda page styles ===== */
+
+/* ── Skeleton Loading ──────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--gray-100) 25%,
+    var(--gray-200) 50%,
+    var(--gray-100) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+
+.skeleton-cb {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.skeleton-text {
+  height: 16px;
+  flex: 1;
+  border-radius: 4px;
+}
+
+.skeleton-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.skeleton-label {
+  width: 120px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+/* Priority head label */
+.prio-head-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Priority badge */
+.prio-badge {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.2rem 0.625rem;
+    border-radius: 9999px;
+}
+
+/* Notification placeholder (spacer for read items) */
+.notif-spacer {
+    width: 8px;
+    flex-shrink: 0;
+}
+
+/* Recurring icon in label */
+.recur-icon {
+    color: var(--gray-400);
+    margin-left: 0.25rem;
+}
+
+/* Recurrence options shown below checkbox */
+.recur-opts {
+    display: flex;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+    margin-left: 1.5rem;
+}
+
+/* File attach hint */
+.file-hint {
+    font-size: 0.6875rem;
+    color: var(--gray-400);
+    margin-top: 0.25rem;
+}
+
+/* Responsive: hide sidebar on small screens */
+@media (max-width: 767px) {
+    .sidebar {
+        display: none;
+    }
+}
+

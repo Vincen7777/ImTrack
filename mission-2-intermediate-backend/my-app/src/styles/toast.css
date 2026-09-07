@@ -1,0 +1,30 @@
+/* ============================================================
+   toast.css
+   Style untuk ToastProvider (lihat src/components/common/ToastProvider.jsx).
+   Catatan: style/components.css pada mockup asli tidak diupload, jadi
+   style toast ini dibuat baru agar hook useToast() berfungsi.
+   ============================================================ */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    transform: translate(-50%, 1rem);
+    background: var(--gray-900);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 0.625rem 1.125rem;
+    border-radius: var(--r-md);
+    box-shadow: var(--sh-lg);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+    z-index: 100;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
