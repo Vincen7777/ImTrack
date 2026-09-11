@@ -1,0 +1,3 @@
+-- Akun demo lama menggunakan password placeholder dan tidak bisa login.
+-- Buat akun dengan POST /api/auth/register atau formulir /sign-up,
+-- lalu verifikasi email. Tidak ada password/default user yang dibagikan.

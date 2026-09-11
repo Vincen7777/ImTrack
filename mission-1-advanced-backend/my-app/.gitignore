@@ -1,0 +1,37 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+.env
+upload/*
+!upload/.gitkeep
+server/storage/mail/*
+!server/storage/mail/.gitkeep
+server/storage/test-*/
+tmp/mysql-mission-test/
+tmp/mission-integration-*/
+tmp/mission-ui-*/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Mission instruction files (internal, jangan di-push)
+missionobject.md
+missionobject2.md

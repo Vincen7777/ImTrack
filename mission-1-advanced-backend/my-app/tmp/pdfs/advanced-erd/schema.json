@@ -1,0 +1,553 @@
+[
+  {
+    "table": "users",
+    "fields": [
+      {
+        "name": "user_id",
+        "type": "BIGINT UNSIGNED",
+        "nullable": false,
+        "pk": true,
+        "autoIncrement": true,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "fullname",
+        "type": "VARCHAR(100)",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "username",
+        "type": "VARCHAR(50)",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": true,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "email",
+        "type": "VARCHAR(255)",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": true,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "password_hash",
+        "type": "VARCHAR(255)",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "avatar_url",
+        "type": "VARCHAR(500)",
+        "nullable": true,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "is_active",
+        "type": "TINYINT(1)",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": true,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "verification_token",
+        "type": "VARCHAR(64)",
+        "nullable": true,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": true,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "verification_expires_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "email_verified_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      }
+    ],
+    "indexes": [],
+    "uniqueKeys": {
+      "users_username_unique": {
+        "fields": [
+          "username"
+        ],
+        "msg": null,
+        "name": "users_username_unique",
+        "column": "username",
+        "customIndex": false
+      },
+      "users_email_unique": {
+        "fields": [
+          "email"
+        ],
+        "msg": null,
+        "name": "users_email_unique",
+        "column": "email",
+        "customIndex": false
+      },
+      "users_verification_token_unique": {
+        "fields": [
+          "verification_token"
+        ],
+        "msg": null,
+        "name": "users_verification_token_unique",
+        "column": "verification_token",
+        "customIndex": false
+      }
+    }
+  },
+  {
+    "table": "tasks",
+    "fields": [
+      {
+        "name": "task_id",
+        "type": "BIGINT UNSIGNED",
+        "nullable": false,
+        "pk": true,
+        "autoIncrement": true,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "user_id",
+        "type": "BIGINT UNSIGNED",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": {
+          "model": "users",
+          "key": "user_id"
+        },
+        "onDelete": "CASCADE",
+        "onUpdate": "CASCADE"
+      },
+      {
+        "name": "recurrence_id",
+        "type": "BIGINT UNSIGNED",
+        "nullable": true,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": {
+          "model": "recurrences",
+          "key": "recurrence_id"
+        },
+        "onDelete": "SET NULL",
+        "onUpdate": "CASCADE"
+      },
+      {
+        "name": "title",
+        "type": "VARCHAR(300)",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "priority",
+        "type": "ENUM('Sekarang', 'Nanti', 'Someday')",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": "Nanti",
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "status",
+        "type": "ENUM('todo', 'done')",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": "todo",
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "due_date",
+        "type": "DATE",
+        "nullable": true,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "category",
+        "type": "VARCHAR(100)",
+        "nullable": true,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "is_recurring",
+        "type": "TINYINT(1)",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": false,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "deleted_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      }
+    ],
+    "indexes": [
+      {
+        "fields": [
+          "user_id",
+          "status"
+        ],
+        "type": "",
+        "parser": null,
+        "name": "tasks_user_id_status"
+      },
+      {
+        "fields": [
+          "user_id",
+          "priority"
+        ],
+        "type": "",
+        "parser": null,
+        "name": "tasks_user_id_priority"
+      }
+    ],
+    "uniqueKeys": {}
+  },
+  {
+    "table": "tags",
+    "fields": [
+      {
+        "name": "tag_id",
+        "type": "BIGINT UNSIGNED",
+        "nullable": false,
+        "pk": true,
+        "autoIncrement": true,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "user_id",
+        "type": "BIGINT UNSIGNED",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": {
+          "model": "users",
+          "key": "user_id"
+        },
+        "onDelete": "CASCADE",
+        "onUpdate": "CASCADE"
+      },
+      {
+        "name": "name",
+        "type": "VARCHAR(50)",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      }
+    ],
+    "indexes": [
+      {
+        "unique": true,
+        "fields": [
+          "user_id",
+          "name"
+        ],
+        "type": "",
+        "parser": null,
+        "name": "tags_user_id_name"
+      }
+    ],
+    "uniqueKeys": {}
+  },
+  {
+    "table": "task_tags",
+    "fields": [
+      {
+        "name": "task_tag_id",
+        "type": "BIGINT UNSIGNED",
+        "nullable": false,
+        "pk": true,
+        "autoIncrement": true,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "task_id",
+        "type": "BIGINT UNSIGNED",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": "task_tags_tag_id_task_id_unique",
+        "default": null,
+        "ref": {
+          "model": "tasks",
+          "key": "task_id"
+        },
+        "onDelete": "CASCADE",
+        "onUpdate": "CASCADE"
+      },
+      {
+        "name": "tag_id",
+        "type": "BIGINT UNSIGNED",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": "task_tags_tag_id_task_id_unique",
+        "default": null,
+        "ref": {
+          "model": "tags",
+          "key": "tag_id"
+        },
+        "onDelete": "CASCADE",
+        "onUpdate": "CASCADE"
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      }
+    ],
+    "indexes": [],
+    "uniqueKeys": {
+      "task_tags_tag_id_task_id_unique": {
+        "fields": [
+          "task_id",
+          "tag_id"
+        ],
+        "msg": null,
+        "name": "task_tags_tag_id_task_id_unique",
+        "column": "tag_id",
+        "customIndex": true
+      }
+    }
+  },
+  {
+    "table": "recurrences",
+    "fields": [
+      {
+        "name": "recurrence_id",
+        "type": "BIGINT UNSIGNED",
+        "nullable": false,
+        "pk": true,
+        "autoIncrement": true,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "recurrence_type",
+        "type": "ENUM('daily', 'weekly', 'monthly')",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "start_date",
+        "type": "DATE",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "pk": false,
+        "autoIncrement": false,
+        "unique": false,
+        "default": null,
+        "ref": null,
+        "onDelete": null,
+        "onUpdate": null
+      }
+    ],
+    "indexes": [],
+    "uniqueKeys": {}
+  }
+]
