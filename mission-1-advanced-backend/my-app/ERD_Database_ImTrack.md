@@ -2,7 +2,9 @@
 
 Skema inti yang digunakan aplikasi saat ini. Sumber implementasi:
 server/models/index.js dan server/database/migrate.js.
-File PDF lama merupakan arsip desain mission sebelumnya.
+PDF terbaru (12 September 2026, 8 halaman) tersedia di ERD_Database_ImTrack.pdf
+dan output/pdf/Laporan_Mission_ERD_ImTrack.pdf. Keduanya memuat skema aktif,
+kolom verifikasi email, relasi, kamus data, migrasi, dan ringkasan pengujian.
 
 ~~~mermaid
 erDiagram

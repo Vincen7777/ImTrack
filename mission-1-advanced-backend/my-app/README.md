@@ -268,8 +268,9 @@ isolasi akun, upload valid/tidak valid/terlalu besar, dan email Nodemailer lokal
 - server/routes, middleware, validators: HTTP, JWT, validasi, upload.
 - src/components/auth: sesi dan proteksi halaman, foto profil.
 - ERD_Database_ImTrack.md: ERD implementasi terbaru.
-- PDF ERD dan laporan di output/pdf adalah arsip mission sebelumnya dan belum
-  mencakup perubahan autentikasi ini.
+- ERD_Database_ImTrack.pdf dan output/pdf/Laporan_Mission_ERD_ImTrack.pdf:
+  laporan terbaru 8 halaman (12 September 2026), mencakup skema aktif, kolom
+  verifikasi email, relasi, kamus data, migrasi, dan ringkasan pengujian.
 
 Kolaborasi grup, Google OAuth, reset password, kalender, keuangan, dan kesehatan
 belum menjadi endpoint dalam mission ini. Tombol simulasi login Google dan reset
